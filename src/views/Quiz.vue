@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+  <div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex flex-col">
     <!-- Header -->
     <div
       class="bg-white/80 backdrop-blur-md shadow-lg border-b border-gray-200/50 sticky top-0 z-50"
@@ -46,7 +46,7 @@
       </div>
     </div>
 
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Loading State -->
       <div
         v-if="questionsQuery.isLoading.value"
@@ -584,6 +584,9 @@
         </router-link>
       </div>
     </div>
+
+    <!-- Footer -->
+    <Footer />
   </div>
 </template>
 
@@ -593,6 +596,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useQuiz } from '@/composables/useQuiz'
 import type { QuizAttempt, Question } from '@/types'
+import Footer from '@/components/layout/Footer.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -679,7 +683,7 @@ const startQuiz = async () => {
       applicantId: userStore.user.applicantId,
       deckId: deckId.value,
     })
-    
+
     // Store the questions from the attempt to ensure consistency
     currentQuizQuestions.value = attempt.questions || []
     currentAttemptId.value = attempt.id
@@ -687,7 +691,7 @@ const startQuiz = async () => {
     selectedAnswers.value = new Array(attempt.questions?.length || 0).fill(undefined)
     elapsedTime.value = 0
     startTimer()
-    
+
     // Debug log to verify questions consistency
     console.log('Quiz started with questions:', attempt.questions?.length, 'questions')
     console.log('First question:', attempt.questions?.[0]?.question)
@@ -723,12 +727,14 @@ const finishQuiz = async () => {
     })
     quizResult.value = result
     quizFinished.value = true
-    
+
     // Debug log to verify questions consistency in results
     console.log('Quiz finished with questions:', result.questions?.length, 'questions')
     console.log('First question in results:', result.questions?.[0]?.question)
-    console.log('Questions match:', 
-      currentQuizQuestions.value[0]?.question === result.questions?.[0]?.question)
+    console.log(
+      'Questions match:',
+      currentQuizQuestions.value[0]?.question === result.questions?.[0]?.question
+    )
   } catch (error) {
     console.log('Failed to finish quiz:', error)
   }

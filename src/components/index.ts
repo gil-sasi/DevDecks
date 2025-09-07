@@ -26,3 +26,4 @@ export { default as LeaderboardTable } from './leaderboard/LeaderboardTable.vue'
 
 // Layout Components
 export { default as PageHeader } from './layout/PageHeader.vue'
+export { default as Footer } from './layout/Footer.vue'

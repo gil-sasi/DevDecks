@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50">
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 flex flex-col">
     <!-- Professional Admin Header -->
     <div
       class="bg-white/90 backdrop-blur-md shadow-xl border-b border-gray-200/50 sticky top-0 z-50"
@@ -46,7 +46,7 @@
       </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Professional Admin Login -->
       <div v-if="!isAuthenticated" class="max-w-lg mx-auto">
         <div
@@ -838,6 +838,51 @@
         </div>
       </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <BaseModal v-model="showDeleteModal" title="Delete Deck" size="md" :closable="false">
+      <div class="text-center py-6">
+        <div
+          class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"
+        >
+          <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"
+            />
+          </svg>
+        </div>
+
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Are you sure?</h3>
+        <p class="text-gray-600 mb-6">
+          You are about to delete the deck
+          <span class="font-semibold text-gray-900">"{{ deckToDelete?.title }}"</span>.
+          <br />
+          <span class="text-red-600 font-medium">This action cannot be undone.</span>
+        </p>
+
+        <div class="flex justify-center space-x-4">
+          <button
+            @click="cancelDeleteDeck"
+            class="px-6 py-2 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors duration-200 font-medium"
+          >
+            No, Cancel
+          </button>
+          <button
+            @click="confirmDeleteDeck"
+            :disabled="deleteDeckMutation.isPending.value"
+            class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl transition-colors duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {{ deleteDeckMutation.isPending.value ? 'Deleting...' : 'Yes, Delete' }}
+          </button>
+        </div>
+      </div>
+    </BaseModal>
+
+    <!-- Footer -->
+    <Footer />
   </div>
 </template>
 
@@ -847,12 +892,18 @@ import { useDecks } from '@/composables/useDecks'
 import { useLeaderboard } from '@/composables/useLeaderboard'
 import { useAdmin } from '@/composables/useAdmin'
 import { api } from '@/lib/axios'
+import BaseModal from '@/components/ui/BaseModal.vue'
+import Footer from '@/components/layout/Footer.vue'
 
 // Admin authentication
 const isAuthenticated = ref(false)
 const adminToken = ref('')
 const loginError = ref('')
 const isLoggingIn = ref(false)
+
+// Delete confirmation modal
+const showDeleteModal = ref(false)
+const deckToDelete = ref<{ id: string; title: string } | null>(null)
 
 // UI state
 const activeTab = ref<'decks' | 'questions'>('decks')
@@ -1156,16 +1207,31 @@ const removeQuestion = async (questionIndex: number) => {
   }
 }
 
-const deleteDeck = async (deckId: string) => {
-  if (confirm('Are you sure you want to delete this deck? This action cannot be undone.')) {
-    try {
-      await deleteDeckMutation.mutateAsync(deckId)
-      // Show success message (you can add a toast notification here)
-    } catch (error) {
-      console.error('Failed to delete deck:', error)
-      // Show error message (you can add a toast notification here)
-    }
+const deleteDeck = (deckId: string) => {
+  const deck = decks.value?.find((d) => d.id === deckId)
+  if (deck) {
+    deckToDelete.value = { id: deckId, title: deck.title }
+    showDeleteModal.value = true
   }
+}
+
+const confirmDeleteDeck = async () => {
+  if (!deckToDelete.value) return
+
+  try {
+    await deleteDeckMutation.mutateAsync(deckToDelete.value.id)
+    showDeleteModal.value = false
+    deckToDelete.value = null
+    // Show success message (you can add a toast notification here)
+  } catch (error) {
+    console.error('Failed to delete deck:', error)
+    // Show error message (you can add a toast notification here)
+  }
+}
+
+const cancelDeleteDeck = () => {
+  showDeleteModal.value = false
+  deckToDelete.value = null
 }
 
 onMounted(() => {

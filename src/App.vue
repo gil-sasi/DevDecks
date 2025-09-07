@@ -108,15 +108,6 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <router-view />
     </main>
-
-    <!-- Footer -->
-    <footer class="bg-white/50 backdrop-blur-sm border-t border-gray-200/50 mt-16">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="text-center text-gray-500 text-sm">
-          <p>&copy; 2024 DevDecks. Built with Vue.js, TypeScript, and TailwindCSS.</p>
-        </div>
-      </div>
-    </footer>
   </div>
 </template>
 
