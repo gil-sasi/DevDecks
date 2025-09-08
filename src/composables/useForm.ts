@@ -77,7 +77,9 @@ export function useForm<T extends Record<string, any>>(
     Object.keys(initialData).forEach((key) => {
       ;(formState.data as any)[key] = initialData[key]
     })
-    formState.errors = {} as Record<keyof T, string>
+    Object.keys(formState.errors).forEach((key) => {
+      ;(formState.errors as any)[key] = ''
+    })
     formState.isValid = true
     formState.isDirty = false
   }
