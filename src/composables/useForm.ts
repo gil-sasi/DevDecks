@@ -77,7 +77,8 @@ export function useForm<T extends Record<string, any>>(
     Object.keys(initialData).forEach((key) => {
       ;(formState.data as any)[key] = initialData[key]
     })
-    Object.keys(formState.errors).forEach((key) => {
+    // Reset errors by creating a new empty object
+    Object.keys(initialData).forEach((key) => {
       ;(formState.errors as any)[key] = ''
     })
     formState.isValid = true
