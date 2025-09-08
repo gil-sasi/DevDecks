@@ -58,7 +58,12 @@ app.use('*', (req: Request, res: Response) => {
   })
 })
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`)
-  console.log(`📊 Health check: http://localhost:${PORT}/api/health`)
-})
+// For Vercel, export the app instead of listening
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`)
+    console.log(`📊 Health check: http://localhost:${PORT}/api/health`)
+  })
+}
+
+export default app

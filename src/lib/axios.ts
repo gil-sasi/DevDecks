@@ -2,7 +2,7 @@ import axios from 'axios'
 import type { ApiError } from '@/types'
 
 export const api = axios.create({
-  baseURL: 'http://localhost:3001/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: {
     'Content-Type': 'application/json',
   },

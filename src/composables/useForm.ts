@@ -1,5 +1,4 @@
 import { reactive, computed } from 'vue'
-import type { FormState } from '@/types'
 
 type ValidationRule<T> = {
   [K in keyof T]?: {
@@ -30,7 +29,7 @@ export function useForm<T extends Record<string, any>>(
 
     for (const fieldName of fieldsToValidate) {
       const rules = validationRules[fieldName]
-      const value = formState.data[fieldName]
+      const value = (formState.data as any)[fieldName]
       let fieldError = ''
 
       if (rules) {
@@ -74,7 +73,10 @@ export function useForm<T extends Record<string, any>>(
   }
 
   const reset = () => {
-    Object.assign(formState.data, { ...initialData })
+    // Reset data by updating each property individually
+    Object.keys(initialData).forEach((key) => {
+      ;(formState.data as any)[key] = initialData[key]
+    })
     formState.errors = {} as Record<keyof T, string>
     formState.isValid = true
     formState.isDirty = false
