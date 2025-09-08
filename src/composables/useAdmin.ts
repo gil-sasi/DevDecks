@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { api } from '@/lib/axios'
 import type { Deck, ApiResponse } from '@/types'
 

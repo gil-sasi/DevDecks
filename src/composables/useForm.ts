@@ -1,5 +1,5 @@
 import { reactive, computed } from 'vue'
-import type { FormState, ValidationError } from '@/types'
+import type { FormState } from '@/types'
 
 type ValidationRule<T> = {
   [K in keyof T]?: {
@@ -15,8 +15,8 @@ export function useForm<T extends Record<string, any>>(
   initialData: T,
   validationRules?: ValidationRule<T>
 ) {
-  const formState = reactive<FormState<T>>({
-    data: { ...initialData },
+  const formState = reactive({
+    data: { ...initialData } as T,
     errors: {} as Record<keyof T, string>,
     isValid: true,
     isDirty: false,
@@ -25,7 +25,7 @@ export function useForm<T extends Record<string, any>>(
   const validate = (field?: keyof T): boolean => {
     if (!validationRules) return true
 
-    const fieldsToValidate = field ? [field] : Object.keys(validationRules) as (keyof T)[]
+    const fieldsToValidate = field ? [field] : (Object.keys(validationRules) as (keyof T)[])
     let isFormValid = true
 
     for (const fieldName of fieldsToValidate) {
@@ -65,7 +65,7 @@ export function useForm<T extends Record<string, any>>(
         }
       }
 
-      formState.errors[fieldName] = fieldError
+      ;(formState.errors as any)[fieldName] = fieldError
       if (fieldError) isFormValid = false
     }
 
@@ -74,28 +74,28 @@ export function useForm<T extends Record<string, any>>(
   }
 
   const reset = () => {
-    formState.data = { ...initialData }
+    Object.assign(formState.data, { ...initialData })
     formState.errors = {} as Record<keyof T, string>
     formState.isValid = true
     formState.isDirty = false
   }
 
   const updateField = (field: keyof T, value: T[keyof T]) => {
-    formState.data[field] = value
+    ;(formState.data as any)[field] = value
     formState.isDirty = true
-    
+
     // Clear error for this field when user starts typing
-    if (formState.errors[field]) {
-      formState.errors[field] = ''
+    if ((formState.errors as any)[field]) {
+      ;(formState.errors as any)[field] = ''
     }
   }
 
   const getFieldError = (field: keyof T): string => {
-    return formState.errors[field] || ''
+    return (formState.errors as any)[field] || ''
   }
 
   const hasFieldError = (field: keyof T): boolean => {
-    return !!formState.errors[field]
+    return !!(formState.errors as any)[field]
   }
 
   const isDirty = computed(() => formState.isDirty)
