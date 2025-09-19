@@ -1,0 +1,14 @@
+[33mcommit 5b5495f4002a77029536a61c6a75464863ca00de[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Gil Sasi <gilsasiy@gmail.com>
+Date:   Fri Sep 19 08:56:17 2025 +0300
+
+    Fix Vercel deployment issues - disable seed script, fix build config
+
+api/src/models/QuizAttempt.ts
+api/src/routes/applicants.ts
+api/src/routes/decks.ts
+api/src/types/index.ts
+api/tsconfig.json
+fix-api-errors.js
+package.json
+vercel.json
