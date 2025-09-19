@@ -6,8 +6,10 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// Force-load api/.env regardless of where you start the process
-dotenv.config({ path: path.resolve(__dirname, '../.env') })
+// Force-load api/.env regardless of where you start the process (only in dev)
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config({ path: path.resolve(__dirname, '../.env') })
+}
 // -----------------------------------------------------------
 
 import express, { Request, Response, NextFunction } from 'express'
@@ -33,10 +35,13 @@ app.use(
 )
 app.use(express.json())
 
-const envPath = path.resolve(__dirname, '../.env')
-const result = dotenv.config({ path: envPath })
-console.log('dotenv error:', result.error)
-console.log('dotenv parsed keys:', Object.keys(result.parsed || {}))
+// Additional env loading for development debugging
+if (process.env.NODE_ENV !== 'production') {
+  const envPath = path.resolve(__dirname, '../.env')
+  const result = dotenv.config({ path: envPath })
+  console.log('dotenv error:', result.error)
+  console.log('dotenv parsed keys:', Object.keys(result.parsed || {}))
+}
 
 // Resolve and validate Mongo URI
 const MONGO_URI = process.env.MONGODB_URI
