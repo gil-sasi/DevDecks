@@ -2,15 +2,20 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 
+// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
+      '@': resolve(__dirname, './src'),
     },
-    extensions: ['.js', '.ts', '.jsx', '.tsx', '.json'],
   },
-  define: {
-    'import.meta.env.VITE_API_URL': JSON.stringify('http://localhost:3001/api'),
+  server: {
+    port: 5173,
+    host: true,
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
   },
 })
