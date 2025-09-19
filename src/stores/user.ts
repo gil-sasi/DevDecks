@@ -1,26 +1,16 @@
-import { defineStore } from 'pinia'
-import { ref, readonly } from 'vue'
+import { create } from 'zustand'
 import type { User } from '@/types'
 
-export const useUserStore = defineStore('user', () => {
-  const user = ref<User | null>(null)
+interface UserState {
+  user: User | null
+  setUser: (userData: User) => void
+  clearUser: () => void
+  isAuthenticated: () => boolean
+}
 
-  const setUser = (userData: User) => {
-    user.value = userData
-  }
-
-  const clearUser = () => {
-    user.value = null
-  }
-
-  const isAuthenticated = () => {
-    return user.value !== null
-  }
-
-  return {
-    user: readonly(user),
-    setUser,
-    clearUser,
-    isAuthenticated,
-  }
-})
+export const useUserStore = create<UserState>((set, get) => ({
+  user: null,
+  setUser: (userData: User) => set({ user: userData }),
+  clearUser: () => set({ user: null }),
+  isAuthenticated: () => get().user !== null,
+}))

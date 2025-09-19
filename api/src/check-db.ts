@@ -1,8 +1,15 @@
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import Deck from './models/Deck.js'
 
-dotenv.config()
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+// Load .env from the api directory (parent of src)
+dotenv.config({ path: path.join(__dirname, '..', '.env') })
 
 async function checkDatabase(): Promise<void> {
   try {

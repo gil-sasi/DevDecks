@@ -1,5 +1,4 @@
-import { computed } from 'vue'
-import { useQuery } from '@tanstack/vue-query'
+import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/axios'
 
 export interface StatsData {
@@ -16,10 +15,8 @@ export const useStats = () => {
     },
   })
 
-  const stats = computed(() => data.value)
-
   return {
-    stats,
+    stats: data,
     isLoading,
     isError,
     error,

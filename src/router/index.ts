@@ -1,34 +1,24 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
-import Quiz from '../views/Quiz.vue'
-import Leaderboard from '../views/Leaderboard.vue'
-import Admin from '../views/Admin.vue'
+import { createBrowserRouter } from 'react-router-dom'
+import Home from '../views/Home'
+import Quiz from '../views/Quiz'
+import Leaderboard from '../views/Leaderboard'
+import Admin from '../views/Admin'
 
-const router = createRouter({
-  history: createWebHistory(),
-  routes: [
-    {
-      path: '/',
-      name: 'Home',
-      component: Home,
-    },
-    {
-      path: '/quiz/:deckId',
-      name: 'Quiz',
-      component: Quiz,
-      props: true,
-    },
-    {
-      path: '/leaderboard',
-      name: 'Leaderboard',
-      component: Leaderboard,
-    },
-    {
-      path: '/admin',
-      name: 'Admin',
-      component: Admin,
-    },
-  ],
-})
-
-export default router
+export const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Home />,
+  },
+  {
+    path: '/quiz/:deckId',
+    element: <Quiz />,
+  },
+  {
+    path: '/leaderboard',
+    element: <Leaderboard />,
+  },
+  {
+    path: '/admin',
+    element: <Admin />,
+  },
+])
