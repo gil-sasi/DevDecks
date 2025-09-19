@@ -11,7 +11,7 @@
     "format": "prettier --write src/",
     "api:dev": "cd api && npm run dev",
     "api:build": "cd api && npm run build",
-    "api:seed": "cd api && npm run seed",
+    "api:check-db": "cd api && npm run check-db",
     "dev:full": "concurrently \"npm run dev\" \"npm run api:dev\"",
     "build:full": "npm run build && npm run api:build",
     "start": "npm run api:build && concurrently \"npm run preview\" \"cd api && npm start\"",
