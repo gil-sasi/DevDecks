@@ -1,4 +1,4 @@
-# DevDecks
+# DevDecks - Quiz Management System
 
 A professional Vue.js quiz application built with TypeScript, featuring a clean component architecture and reusable design patterns.
 
@@ -57,21 +57,25 @@ src/
 ## 🏗️ Architecture Principles
 
 ### **Clean Component Architecture**
+
 - **Base UI Components**: Reusable, prop-driven components (`BaseButton`, `BaseCard`, etc.)
 - **Feature Components**: Business-specific components (`QuizCard`, `LeaderboardTable`)
 - **Page Components**: Minimal, composition-focused views
 
 ### **Composable-First Design**
+
 - **API Layer**: All server interactions through composables
 - **Business Logic**: Extracted into reusable composables
 - **Utility Functions**: Common patterns like forms, timers, error handling
 
 ### **Type Safety**
+
 - **Comprehensive Types**: Detailed interfaces for all data structures
 - **API Contracts**: Typed request/response interfaces
 - **Component Props**: Fully typed component interfaces
 
 ### **State Management**
+
 - **Server State**: Vue Query for caching, background updates, and optimistic updates
 - **Client State**: Pinia for user data and UI state
 - **Form State**: Dedicated form composables with validation
@@ -79,18 +83,21 @@ src/
 ## 🛠️ Development Setup
 
 1. **Install dependencies:**
+
    ```bash
    npm install
    cd api && npm install && cd ..
    ```
 
 2. **Environment setup:**
+
    ```bash
    cp .env.example .env
    # Edit .env with your MongoDB URI and admin token
    ```
 
 3. **Start development:**
+
    ```bash
    npm run dev:full  # Starts both frontend and API
    ```
@@ -103,6 +110,7 @@ src/
 ## 📦 Component Library
 
 ### Base UI Components
+
 ```typescript
 // Clean, reusable components with consistent API
 <BaseButton variant="primary" size="lg" :loading="isLoading">
@@ -119,9 +127,10 @@ src/
 ```
 
 ### Feature Components
+
 ```typescript
 // Business-logic components
-<QuizCard 
+<QuizCard
   :title="deck.title"
   :description="deck.description"
   :question-count="deck.questionCount"
@@ -139,17 +148,19 @@ src/
 ## 🔧 Composables Usage
 
 ### Form Management
+
 ```typescript
 const { data, errors, validate, updateField } = useForm(
   { title: '', description: '' },
   {
     title: [{ required: true, minLength: 3 }],
-    description: [{ required: true, maxLength: 500 }]
+    description: [{ required: true, maxLength: 500 }],
   }
 )
 ```
 
 ### Error Handling
+
 ```typescript
 const { handleError, currentError, clearError } = useErrorHandler()
 
@@ -161,6 +172,7 @@ try {
 ```
 
 ### Timer Utilities
+
 ```typescript
 const { time, formattedTime, start, stop, reset } = useTimer()
 // Automatically formats as MM:SS
