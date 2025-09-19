@@ -1,4 +1,4 @@
-import { ref, watch, Ref } from 'vue'
+import { useState, useEffect } from 'react'
 
 export function useLocalStorage<T>(
   key: string,
@@ -13,42 +13,42 @@ export function useLocalStorage<T>(
     },
     write: (value: T): string => JSON.stringify(value),
   }
-): [Ref<T>, (value: T) => void, () => void] {
-  const storedValue = localStorage.getItem(key)
-  const initialValue = storedValue !== null ? serializer.read(storedValue) : defaultValue
-
-  const state = ref<T>(initialValue) as Ref<T>
-
-  const setState = (value: T) => {
+): [T, (value: T) => void, () => void] {
+  const [state, setState] = useState<T>(() => {
     try {
-      state.value = value
+      const storedValue = localStorage.getItem(key)
+      return storedValue !== null ? serializer.read(storedValue) : defaultValue
+    } catch {
+      return defaultValue
+    }
+  })
+
+  const setValue = (value: T) => {
+    try {
+      setState(value)
       localStorage.setItem(key, serializer.write(value))
     } catch (error) {
       console.error(`Error saving to localStorage key "${key}":`, error)
     }
   }
 
-  const removeState = () => {
+  const removeValue = () => {
     try {
       localStorage.removeItem(key)
-      state.value = defaultValue
+      setState(defaultValue)
     } catch (error) {
       console.error(`Error removing localStorage key "${key}":`, error)
     }
   }
 
-  // Watch for changes and update localStorage
-  watch(
-    state,
-    (newValue) => {
-      try {
-        localStorage.setItem(key, serializer.write(newValue))
-      } catch (error) {
-        console.error(`Error updating localStorage key "${key}":`, error)
-      }
-    },
-    { deep: true }
-  )
+  // Update localStorage when state changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(key, serializer.write(state))
+    } catch (error) {
+      console.error(`Error updating localStorage key "${key}":`, error)
+    }
+  }, [key, state, serializer])
 
-  return [state, setState, removeState]
+  return [state, setValue, removeValue]
 }

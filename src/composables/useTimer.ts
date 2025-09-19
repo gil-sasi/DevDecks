@@ -1,37 +1,34 @@
-import { ref, computed, onUnmounted } from 'vue'
+import { useState, useEffect, useMemo, useRef } from 'react'
 
 export function useTimer(initialTime = 0, interval = 1000) {
-  const time = ref(initialTime)
-  const isRunning = ref(false)
-  let timerId: NodeJS.Timeout | null = null
+  const [time, setTime] = useState(initialTime)
+  const [isRunning, setIsRunning] = useState(false)
+  const timerIdRef = useRef<NodeJS.Timeout | null>(null)
 
-  const formattedTime = computed(() => {
-    const totalSeconds = time.value
+  const formattedTime = useMemo(() => {
+    const totalSeconds = time
     const minutes = Math.floor(totalSeconds / 60)
     const seconds = totalSeconds % 60
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-  })
+  }, [time])
 
   const start = () => {
-    if (!isRunning.value) {
-      isRunning.value = true
-      timerId = setInterval(() => {
-        time.value += interval / 1000
-      }, interval)
+    if (!isRunning) {
+      setIsRunning(true)
     }
   }
 
   const stop = () => {
-    if (isRunning.value && timerId) {
-      isRunning.value = false
-      clearInterval(timerId)
-      timerId = null
+    if (isRunning && timerIdRef.current) {
+      setIsRunning(false)
+      clearInterval(timerIdRef.current)
+      timerIdRef.current = null
     }
   }
 
   const reset = (newTime = initialTime) => {
     stop()
-    time.value = newTime
+    setTime(newTime)
   }
 
   const pause = () => {
@@ -42,15 +39,39 @@ export function useTimer(initialTime = 0, interval = 1000) {
     start()
   }
 
+  // Handle timer interval
+  useEffect(() => {
+    if (isRunning) {
+      timerIdRef.current = setInterval(() => {
+        setTime((prevTime) => prevTime + interval / 1000)
+      }, interval)
+    } else {
+      if (timerIdRef.current) {
+        clearInterval(timerIdRef.current)
+        timerIdRef.current = null
+      }
+    }
+
+    return () => {
+      if (timerIdRef.current) {
+        clearInterval(timerIdRef.current)
+      }
+    }
+  }, [isRunning, interval])
+
   // Cleanup on unmount
-  onUnmounted(() => {
-    stop()
-  })
+  useEffect(() => {
+    return () => {
+      if (timerIdRef.current) {
+        clearInterval(timerIdRef.current)
+      }
+    }
+  }, [])
 
   return {
-    time: computed(() => time.value),
+    time,
     formattedTime,
-    isRunning: computed(() => isRunning.value),
+    isRunning,
     start,
     stop,
     reset,

@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { useState, useMemo } from 'react'
 import type { ApiError } from '@/types'
 
 interface ErrorState {
@@ -8,11 +8,11 @@ interface ErrorState {
 }
 
 export function useErrorHandler() {
-  const errors = ref<ErrorState[]>([])
-  const currentError = ref<ErrorState | null>(null)
+  const [errors, setErrors] = useState<ErrorState[]>([])
+  const [currentError, setCurrentError] = useState<ErrorState | null>(null)
 
-  const hasErrors = computed(() => errors.value.length > 0)
-  const latestError = computed(() => errors.value[errors.value.length - 1] || null)
+  const hasErrors = useMemo(() => errors.length > 0, [errors])
+  const latestError = useMemo(() => errors[errors.length - 1] || null, [errors])
 
   const handleError = (error: unknown, context?: string) => {
     let errorState: ErrorState
@@ -46,8 +46,8 @@ export function useErrorHandler() {
       errorState.message = `${context}: ${errorState.message}`
     }
 
-    errors.value.push(errorState)
-    currentError.value = errorState
+    setErrors((prevErrors) => [...prevErrors, errorState])
+    setCurrentError(errorState)
 
     // Log to console in development
     if (import.meta.env.DEV) {
@@ -59,15 +59,15 @@ export function useErrorHandler() {
 
   const clearError = (index?: number) => {
     if (index !== undefined) {
-      errors.value.splice(index, 1)
+      setErrors((prevErrors) => prevErrors.filter((_, i) => i !== index))
     } else {
-      currentError.value = null
+      setCurrentError(null)
     }
   }
 
   const clearAllErrors = () => {
-    errors.value = []
-    currentError.value = null
+    setErrors([])
+    setCurrentError(null)
   }
 
   const getErrorMessage = (error: unknown): string => {
@@ -85,8 +85,10 @@ export function useErrorHandler() {
 
   const isNetworkError = (error: unknown): boolean => {
     if (error instanceof Error) {
-      return error.message.toLowerCase().includes('network') || 
-             error.message.toLowerCase().includes('fetch')
+      return (
+        error.message.toLowerCase().includes('network') ||
+        error.message.toLowerCase().includes('fetch')
+      )
     }
     if (typeof error === 'object' && error !== null) {
       const apiError = error as ApiError
@@ -112,8 +114,8 @@ export function useErrorHandler() {
   }
 
   return {
-    errors: computed(() => errors.value),
-    currentError: computed(() => currentError.value),
+    errors,
+    currentError,
     hasErrors,
     latestError,
     handleError,

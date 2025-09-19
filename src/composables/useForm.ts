@@ -1,4 +1,4 @@
-import { reactive, computed } from 'vue'
+import { useState, useMemo } from 'react'
 
 type ValidationRule<T> = {
   [K in keyof T]?: {
@@ -14,12 +14,10 @@ export function useForm<T extends Record<string, any>>(
   initialData: T,
   validationRules?: ValidationRule<T>
 ) {
-  const formState = reactive({
-    data: { ...initialData } as T,
-    errors: {} as Record<keyof T, string>,
-    isValid: true,
-    isDirty: false,
-  })
+  const [data, setData] = useState<T>({ ...initialData })
+  const [errors, setErrors] = useState<Record<keyof T, string>>({} as Record<keyof T, string>)
+  const [isValid, setIsValid] = useState(true)
+  const [isDirty, setIsDirty] = useState(false)
 
   const validate = (field?: keyof T): boolean => {
     if (!validationRules) return true
@@ -27,9 +25,11 @@ export function useForm<T extends Record<string, any>>(
     const fieldsToValidate = field ? [field] : (Object.keys(validationRules) as (keyof T)[])
     let isFormValid = true
 
+    const newErrors = { ...errors }
+
     for (const fieldName of fieldsToValidate) {
       const rules = validationRules[fieldName]
-      const value = (formState.data as any)[fieldName]
+      const value = (data as any)[fieldName]
       let fieldError = ''
 
       if (rules) {
@@ -64,49 +64,39 @@ export function useForm<T extends Record<string, any>>(
         }
       }
 
-      ;(formState.errors as any)[fieldName] = fieldError
+      ;(newErrors as any)[fieldName] = fieldError
       if (fieldError) isFormValid = false
     }
 
-    formState.isValid = isFormValid
+    setErrors(newErrors)
+    setIsValid(isFormValid)
     return isFormValid
   }
 
   const reset = () => {
-    // Reset data by updating each property individually
-    Object.keys(initialData).forEach((key) => {
-      ;(formState.data as any)[key] = initialData[key]
-    })
-    // Reset errors by creating a new empty object
-    Object.keys(initialData).forEach((key) => {
-      ;(formState.errors as any)[key] = ''
-    })
-    formState.isValid = true
-    formState.isDirty = false
+    setData({ ...initialData })
+    setErrors({} as Record<keyof T, string>)
+    setIsValid(true)
+    setIsDirty(false)
   }
 
   const updateField = (field: keyof T, value: T[keyof T]) => {
-    ;(formState.data as any)[field] = value
-    formState.isDirty = true
+    setData((prevData) => ({ ...prevData, [field]: value }))
+    setIsDirty(true)
 
     // Clear error for this field when user starts typing
-    if ((formState.errors as any)[field]) {
-      ;(formState.errors as any)[field] = ''
+    if ((errors as any)[field]) {
+      setErrors((prevErrors) => ({ ...prevErrors, [field]: '' }))
     }
   }
 
   const getFieldError = (field: keyof T): string => {
-    return (formState.errors as any)[field] || ''
+    return (errors as any)[field] || ''
   }
 
   const hasFieldError = (field: keyof T): boolean => {
-    return !!(formState.errors as any)[field]
+    return !!(errors as any)[field]
   }
-
-  const isDirty = computed(() => formState.isDirty)
-  const isValid = computed(() => formState.isValid)
-  const data = computed(() => formState.data)
-  const errors = computed(() => formState.errors)
 
   return {
     data,

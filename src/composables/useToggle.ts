@@ -1,20 +1,20 @@
-import { ref, Ref } from 'vue'
+import { useState } from 'react'
 
 export function useToggle(
   initialValue = false
-): [Ref<boolean>, (value?: boolean) => void, () => void, () => void] {
-  const state = ref(initialValue)
+): [boolean, (value?: boolean) => void, () => void, () => void] {
+  const [state, setState] = useState(initialValue)
 
   const toggle = (value?: boolean) => {
-    state.value = value !== undefined ? value : !state.value
+    setState(value !== undefined ? value : !state)
   }
 
   const setTrue = () => {
-    state.value = true
+    setState(true)
   }
 
   const setFalse = () => {
-    state.value = false
+    setState(false)
   }
 
   return [state, toggle, setTrue, setFalse]
