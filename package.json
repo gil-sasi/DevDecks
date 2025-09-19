@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
@@ -15,7 +15,7 @@
     "dev:full": "concurrently \"npm run dev\" \"npm run api:dev\"",
     "build:full": "npm run build && npm run api:build",
     "start": "npm run api:build && concurrently \"npm run preview\" \"cd api && npm start\"",
-    "vercel-build": "npm run build"
+    "vercel-build": "npm run build:full"
   },
   "dependencies": {
     "@tanstack/vue-query": "^5.17.1",

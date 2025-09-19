@@ -53,8 +53,10 @@ export interface QuizAttemptResponse {
 }
 
 export interface ApiResponse<T> {
-  data: T
-  success: boolean
+  data?: T
+  success?: boolean
+  message?: string
+  status?: number
 }
 
 export interface ApiError {

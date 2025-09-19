@@ -30,8 +30,7 @@ const quizAttemptSchema = new Schema<IQuizAttempt>({
     required: true,
   },
   deckId: {
-    type: Schema.Types.ObjectId,
-    ref: 'Deck',
+    type: String,
     required: true,
   },
   deckTitle: {

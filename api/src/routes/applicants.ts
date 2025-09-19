@@ -16,6 +16,7 @@ router.post(
 
       if (!email) {
         return res.status(400).json({
+          success: false,
           message: 'Email is required',
           status: 400,
         })
@@ -47,7 +48,8 @@ router.post(
       })
     } catch (error) {
       console.error('Error creating applicant:', error)
-      res.status(500).json({
+      return res.status(500).json({
+        success: false,
         message: 'Failed to create applicant',
         status: 500,
       })
